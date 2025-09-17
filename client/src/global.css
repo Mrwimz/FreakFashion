@@ -1,0 +1,20 @@
+/*
+  Denna CSS-regel gäller för alla element (*) och återställer deras standardmarginal och -utfyllnad till noll.
+  Den sätter även 'box-sizing' till 'border-box', vilket gör att padding och border inkluderas i elementets totala bredd och höjd.
+  Detta hjälper till att skapa en konsekvent layout i olika webbläsare genom att eliminera oönskade mellanrum och förenkla storleksberäkningar.
+*/
+
+/* 
+  Importerar Tailwind CSS-biblioteket för att använda dess verktyg och komponenter i detta projekt.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=MuseoModerno:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  font-family: 'MuseoModerno', cursive;
+}
