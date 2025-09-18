@@ -1,9 +1,19 @@
 // Base API URL
 const API_BASE = "http://localhost:5000/api";
 
-// =====================
-// Types
-// =====================
+export interface Order {
+  id?: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  street: string;
+  zip: string;
+  city: string;
+  newsletter: boolean;
+  items: { id: number; name: string; price: number; quantity: number }[];
+  total: number;
+}
+
 export interface Category {
   id?: number;
   name: string;
@@ -27,43 +37,34 @@ export interface User {
   username: string;
   email: string;
   admin: number; // 1 = admin, 0 = not admin
-  liked_products?: number[]; // <-- add this
+  liked_products?: number[];
 }
 
-// =====================
-// Admin Service
-// =====================
 class AdminService {
   // ---------- Users ----------
-  // inside AdminService class
+  async likeProduct(userId: number, productId: number): Promise<number[]> {
+    const res = await fetch(`${API_BASE}/users/${userId}/like/${productId}`, {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to like product");
+    return res.json();
+  }
 
-// Like a product
-async likeProduct(userId: number, productId: number): Promise<number[]> {
-  const res = await fetch(`${API_BASE}/users/${userId}/like/${productId}`, {
-    method: "POST",
-  });
-  if (!res.ok) throw new Error("Failed to like product");
-  return res.json(); // returns updated liked_products array
-}
+  async unlikeProduct(userId: number, productId: number): Promise<number[]> {
+    const res = await fetch(`${API_BASE}/users/${userId}/unlike/${productId}`, {
+      method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to unlike product");
+    return res.json();
+  }
 
-// Unlike a product
-async unlikeProduct(userId: number, productId: number): Promise<number[]> {
-  const res = await fetch(`${API_BASE}/users/${userId}/unlike/${productId}`, {
-    method: "POST",
-  });
-  if (!res.ok) throw new Error("Failed to unlike product");
-  return res.json(); // returns updated liked_products array
-}
-
-// Get user by ID
-async getUserById(userId: number): Promise<User> {
-  const res = await fetch(`${API_BASE}/users/${userId}`);
-  if (!res.ok) throw new Error("Failed to fetch user");
-  const user: User = await res.json();
-  // Ensure liked_products is always an array
-  user.liked_products = user.liked_products || [];
-  return user;
-}
+  async getUserById(userId: number): Promise<User> {
+    const res = await fetch(`${API_BASE}/users/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch user");
+    const user: User = await res.json();
+    user.liked_products = user.liked_products || [];
+    return user;
+  }
 
   // ---------- Categories ----------
   async addCategory(category: Category): Promise<Category> {
@@ -137,18 +138,12 @@ async getUserById(userId: number): Promise<User> {
     return res.json();
   }
 
-  /**
-   * Search products by name, brand, or description
-   */
   async searchProducts(query: string): Promise<Product[]> {
     if (!query || query.trim() === "") return [];
-
     const res = await fetch(`${API_BASE}/products`);
     if (!res.ok) throw new Error("Failed to fetch products for search");
-
     const allProducts: Product[] = await res.json();
     const lowerQuery = query.toLowerCase();
-
     return allProducts.filter(
       (p) =>
         p.name?.toLowerCase().includes(lowerQuery) ||
@@ -157,9 +152,6 @@ async getUserById(userId: number): Promise<User> {
     );
   }
 
-  /**
-   * Get similar products based on brand, category_id, and exclude main product by name
-   */
   async getSimilarProducts(params: {
     brand?: string;
     category_id?: number;
@@ -168,22 +160,29 @@ async getUserById(userId: number): Promise<User> {
   }): Promise<Product[]> {
     const res = await fetch(`${API_BASE}/products`);
     if (!res.ok) throw new Error("Failed to fetch products for similarity");
-
     const allProducts: Product[] = await res.json();
     const lowerBrand = params.brand?.toLowerCase() || "";
     const lowerName = params.name?.toLowerCase() || "";
     const categoryId = params.category_id;
-
     let filtered = allProducts.filter((p) => {
       const matchBrand = lowerBrand && p.brand?.toLowerCase() === lowerBrand;
       const matchCategory = categoryId && p.category_id === categoryId;
       const excludeName = lowerName && p.name?.toLowerCase() !== lowerName;
       return (matchBrand || matchCategory) && excludeName;
     });
-
     if (params.limit) filtered = filtered.slice(0, params.limit);
-
     return filtered;
+  }
+
+  // ---------- Orders ----------
+  async createOrder(order: Order): Promise<Order> {
+    const res = await fetch(`${API_BASE}/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
+    });
+    if (!res.ok) throw new Error("Failed to create order");
+    return res.json();
   }
 
   // ---------- Validation ----------
@@ -216,6 +215,5 @@ async getUserById(userId: number): Promise<User> {
   }
 }
 
-// Export a single instance
-const adminService = new AdminService();
+const adminService: AdminService = new AdminService();
 export default adminService;

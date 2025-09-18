@@ -19,16 +19,20 @@ import SearchPage from "./pages/searchPage.tsx";
 import CategoryPage from "./pages/categoryPage.tsx";
 import NewProductsPage from "./pages/newProductsPage.tsx";
 import FavouritesPage from "./pages/favouritesPage.tsx";
+import BasketPage from "./pages/basket.tsx";
+import CheckoutPage from "./pages/checkout.tsx";
+import ConformationPage from "./pages/conformation.tsx";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import Footer from "./components/footer.tsx";
 
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <UserProvider>
+
+function MainApp() {
+  const location = useLocation();
+  return (
+    <>
       <Header />
-
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<App />} />
@@ -36,11 +40,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
 
         {/* Page routes  */}
-        <Route path="/product/:slug" element={<ProductPage />} />
-        <Route path="/search/:query" element={<SearchPage />} />
-        <Route path="/category/:category" element={<CategoryPage />} />
-        <Route path="/news" element={<NewProductsPage />} />
-        <Route path="/favourites" element={<FavouritesPage />} />
+  <Route path="/product/:slug" element={<ProductPage />} />
+  <Route path="/search/:query" element={<SearchPage />} />
+  <Route path="/category/:category" element={<CategoryPage />} />
+  <Route path="/news" element={<NewProductsPage />} />
+  <Route path="/favourites" element={<FavouritesPage />} />
+  <Route path="/basket" element={<BasketPage />} />
+  <Route path="/checkout" element={<CheckoutPage />} />
+  <Route path="/conformation" element={<ConformationPage />} />
 
         {/* Admin routes */}
         <Route path="/admin" element={<Admin />}>
@@ -51,6 +58,16 @@ createRoot(document.getElementById("root")).render(
           <Route path="categories/new" element={<NewCategory />} />
         </Route>
       </Routes>
+      { !location.pathname.startsWith("/admin") && <Footer /> }
+    </>
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <UserProvider>
+        <MainApp />
       </UserProvider>
     </BrowserRouter>
   </StrictMode>

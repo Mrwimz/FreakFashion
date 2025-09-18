@@ -37,10 +37,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showNewBadge = true 
       if (isLiked) localLikes = localLikes.filter(id => id !== product.id);
       else localLikes.push(product.id);
 
-      localStorage.setItem("liked_products", JSON.stringify(localLikes));
-      setLikedProducts(localLikes);
-      setIsLiked(!isLiked);
-      return;
+  localStorage.setItem("liked_products", JSON.stringify(localLikes));
+  setLikedProducts(localLikes);
+  // isLiked uppdateras av useEffect
+  return;
     }
 
     // Logged-in: sync with DB + localStorage
@@ -51,9 +51,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showNewBadge = true 
       if (isLiked) updatedLikes = await adminService.unlikeProduct(userId, product.id);
       else updatedLikes = await adminService.likeProduct(userId, product.id);
 
-      setLikedProducts(updatedLikes);
-      localStorage.setItem("liked_products", JSON.stringify(updatedLikes));
-      setIsLiked(!isLiked);
+  setLikedProducts(updatedLikes);
+  localStorage.setItem("liked_products", JSON.stringify(updatedLikes));
+  // isLiked uppdateras av useEffect
     } catch (err) {
       console.error("Failed to toggle like:", err);
     }
