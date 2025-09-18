@@ -47,11 +47,20 @@ const CategoryPage: React.FC = () => {
   }, [category]);
 
   return (
-    <ProductList
-      products={products}
-      loading={loading}
-      emptyMessage={error || `Inga produkter hittades i kategorin "${category}"`}
-    />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        {error
+          ? "Kategori saknas"
+          : category
+            ? category.charAt(0).toUpperCase() + category.slice(1)
+            : "Kategori"}
+      </h1>
+      <ProductList
+        products={products}
+        loading={loading}
+        emptyMessage={error || `Inga produkter hittades i kategorin "${category}"`}
+      />
+    </div>
   );
 };
 

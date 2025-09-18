@@ -2,6 +2,7 @@ import Hero from "./components/hero";
 import adminService, { Product } from "./services/adminService";
 import { useState, useEffect } from "react";
 import ProductList from "./components/ProductList";
+import Spots from "./components/Spots";
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -33,6 +34,8 @@ const App: React.FC = () => {
          "Hos Freaky Fashion hittar du plagg som vågar tänja på gränserna och uttrycka din unika stil. Från djärva färger till lekfulla mönster och oväntade detaljer – varje plagg är skapat för dig som inte vill smälta in. Utforska vår kollektion och låt din personlighet synas i varje outfit."
         }
       />
+
+      <Spots />
 
       {/* Use reusable ProductList component */}
       <ProductList
